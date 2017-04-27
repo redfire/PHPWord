@@ -332,10 +332,10 @@ class Document
     {
         $controls = array(
             'par'       => array(self::PARA,    'paragraph',    true),
-            'b'         => array(self::STYL,    'font',         'bold',         true),
-            'i'         => array(self::STYL,    'font',         'italic',       true),
-            'u'         => array(self::STYL,    'font',         'underline',    true),
-            'strike'    => array(self::STYL,    'font',         'strikethrough',true),
+            'b'         => array(self::STYL,    'font',         'bold',         $parameter),
+            'i'         => array(self::STYL,    'font',         'italic',       $parameter),
+            'u'         => array(self::STYL,    'font',         'underline',    $parameter),
+            'strike'    => array(self::STYL,    'font',         'strikethrough',$parameter),
             'fs'        => array(self::STYL,    'font',         'size',         $parameter),
             'qc'        => array(self::STYL,    'paragraph',    'alignment',    Jc::CENTER),
             'sa'        => array(self::STYL,    'paragraph',    'spaceAfter',   $parameter),
@@ -371,7 +371,7 @@ class Document
     private function readParagraph($directives)
     {
         list($property, $value) = $directives;
-        $this->textrun = $this->section->addTextRun();
+        $this->textrun = $this->section->addTextRun(['spaceAfter'=>0, 'lineHeight'=>1.0]);
         $this->flags[$property] = $value;
     }
 
@@ -384,7 +384,10 @@ class Document
     private function readStyle($directives)
     {
         list($style, $property, $value) = $directives;
-        $this->flags['styles'][$style][$property] = $value;
+        if($property == 'size')
+            $this->flags['styles'][$style][$property] = $value/2;
+        else
+            $this->flags['styles'][$style][$property] = $value === "0" ? false : true;
     }
 
     /**
